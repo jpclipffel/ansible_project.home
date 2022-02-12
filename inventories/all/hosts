@@ -1,0 +1,46 @@
+# code: language=Ansible tabSize=2
+
+
+all:
+
+  vars:
+    ansible_user: ansctl
+    ansible_become: true
+    ansible_become_user: root
+    ansible_python_interpreter: auto
+    # ---
+    jpclipffel_system_ansible_public_keys_files: ['~/.ssh/ansctl-mine42.rsa.pub']
+
+
+  hosts:
+
+    localhost:
+      ansible_become: false
+      ansible_connection: local
+
+    server.mine42.com:
+      ansible_user: ansctl
+      ansible_become: true
+
+    m42nas01:
+      ansible_user: admin
+      ansible_become: false
+      ansible_python_interpreter: /share/CACHEDEV1_DATA/.qpkg/QPython3/bin/python3
+      docker_pihole_service_volume: /share/Container/PiHole
+      docker_pihole_service_path: "/share/Container/pihole.docker-compose.yml"
+
+    m42nas02:
+      ansible_user: ansctl
+      ansible_python_interpreter: /bin/python3.8
+      docker_pihole_service_volume: /volume1/docker/pihole
+      docker_pihole_service_path: /volume1/docker/pihole.docker-compose.yml
+
+
+  children:
+    servers:
+      hosts:
+        server:
+    nas:
+      hosts:
+        m42nas01:
+        m42nas02:

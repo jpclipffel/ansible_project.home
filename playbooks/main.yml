@@ -1,3 +1,5 @@
+# vim: set ft=Ansible ts=2
+
 - hosts: all
   roles:
     - jpclipffel.system.ansible

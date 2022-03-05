@@ -1,5 +1,6 @@
+# vim: set ft=Ansible ts=2
+
 - hosts: all
   tasks:
-
     - name: Ping
       ping:

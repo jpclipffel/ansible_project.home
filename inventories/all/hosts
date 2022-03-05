@@ -1,5 +1,4 @@
-# code: language=Ansible tabSize=2
-
+# vim: set ft=Ansible ts=2
 
 all:
 
@@ -10,7 +9,6 @@ all:
     ansible_python_interpreter: auto
     # ---
     jpclipffel_system_ansible_public_keys_files: ['~/.ssh/ansctl-mine42.rsa.pub']
-
 
   hosts:
 
@@ -37,12 +35,18 @@ all:
 
 
   children:
+
     servers:
       hosts:
-        server:
-          jpclipffel_k8s_k8s_node_type: "master"
-          jpclipffel_k8s_k8s_control_plane_endpoint: "62.210.38.125"
+        server.mine42.com:
+
     nas:
       hosts:
         m42nas01:
         m42nas02:
+
+    microk8s:
+      hosts:
+        server.mine42.com:
+          jpclipffel_k8s_k8s_node_type: "master"
+          jpclipffel_k8s_k8s_control_plane_endpoint: "62.210.38.125"

@@ -3,6 +3,7 @@
 - hosts: microk8s
   roles:
     - jpclipffel.k8s.microk8s
+    - jpclipffel.container.containerd
 
 - hosts: k8s
   roles:

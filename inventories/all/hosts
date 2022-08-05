@@ -8,7 +8,8 @@ all:
     ansible_become_user: root
     ansible_python_interpreter: auto
     # ---
-    jpclipffel_system_ansible_public_keys_files: ['~/.ssh/ansctl-mine42.rsa.pub']
+    jpclipffel_system_ansible_public_keys_files:
+      - "~/.ssh/ansctl-mine42.rsa.pub"
 
   hosts:
 
@@ -19,6 +20,7 @@ all:
     server.mine42.com:
       ansible_user: ansctl
       ansible_become: true
+      ansible_host: 62.210.38.125
 
     m42nas01:
       ansible_user: admin
@@ -48,15 +50,18 @@ all:
     microk8s:
       hosts:
         server.mine42.com:
-          jpclipffel_container_containerd_configonly: true
-          jpclipffel_container_containerd_root_path: "/var/snap/microk8s/current/args"
-          jpclipffel_container_containerd_config_path: "{{ jpclipffel_container_containerd_root_path }}/containerd-template.toml"
-          jpclipffel_container_containerd_certs:
-            "ghcr.io": |
-              server = "https://ghcr.io"
-              [host."http://ghcr.io"]
-              capabilities = ["pull", "resolve"]
-          jpclipffel_container_containerd_auths: |
-            [plugins."io.containerd.grpc.v1.cri".registry.configs."ghcr.io".auth]
-            username = "foo"
-            password = "bar"
+          jpclipffel_k8s_microk8s_addons:
+            - "dns"
+            - "storage"
+          # jpclipffel_container_containerd_configonly: true
+          # jpclipffel_container_containerd_root_path: "/var/snap/microk8s/current/args"
+          # jpclipffel_container_containerd_config_path: "{{ jpclipffel_container_containerd_root_path }}/containerd-template.toml"
+          # jpclipffel_container_containerd_certs:
+          #   "ghcr.io": |
+          #     server = "https://ghcr.io"
+          #     [host."http://ghcr.io"]
+          #     capabilities = ["pull", "resolve"]
+          # jpclipffel_container_containerd_auths: |
+          #   [plugins."io.containerd.grpc.v1.cri".registry.configs."ghcr.io".auth]
+          #   username = "foo"
+          #   password = "bar"

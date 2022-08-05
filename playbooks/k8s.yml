@@ -1,13 +1,9 @@
 # vim: set ft=Ansible ts=2
 
+
 - hosts: microk8s
+  vars_files:
+    - "../vars/common-microk8s.yml"
   roles:
     - jpclipffel.k8s.microk8s
-    - jpclipffel.container.containerd
-
-- hosts: k8s
-  roles:
-    - jpclipffel.container.config
-    - jpclipffel.container.containerd
-    - jpclipffel.k8s.k8s
-    - jpclipffel.k8s.calico
+    - jpclipffel.k8s.helm

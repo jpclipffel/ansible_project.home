@@ -50,18 +50,10 @@ all:
     microk8s:
       hosts:
         server.mine42.com:
+          jpclipffel_k8s_microk8s_dnsnames:
+            - entry: "DNS.6"
+              host: "server.mine42.com"
           jpclipffel_k8s_microk8s_addons:
             - "dns"
             - "storage"
-          # jpclipffel_container_containerd_configonly: true
-          # jpclipffel_container_containerd_root_path: "/var/snap/microk8s/current/args"
-          # jpclipffel_container_containerd_config_path: "{{ jpclipffel_container_containerd_root_path }}/containerd-template.toml"
-          # jpclipffel_container_containerd_certs:
-          #   "ghcr.io": |
-          #     server = "https://ghcr.io"
-          #     [host."http://ghcr.io"]
-          #     capabilities = ["pull", "resolve"]
-          # jpclipffel_container_containerd_auths: |
-          #   [plugins."io.containerd.grpc.v1.cri".registry.configs."ghcr.io".auth]
-          #   username = "foo"
-          #   password = "bar"
+            - "rbac"

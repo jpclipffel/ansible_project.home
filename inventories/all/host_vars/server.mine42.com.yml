@@ -1,0 +1,68 @@
+# vim: set ft=Ansible ts=2
+
+
+jpclipffel_k8s_microk8s_dnsnames:
+  - entry: "DNS.6"
+    host: "server.mine42.com"
+
+
+jpclipffel_k8s_microk8s_addons:
+  - "dns"
+  - "storage"
+  - "rbac"
+
+
+jpclipffel_k8s_defs_list: []
+
+
+jpclipffel_k8s_helm_charts:
+  # Traefik
+  - name: traefik
+    namespace: traefik-system
+    repo_url: https://helm.traefik.io/traefik
+    ref: traefik
+    atomic: false
+    force: true
+    values:
+      deployment:
+        enabled: true
+      hostNetwork: true
+      ports:
+        web:
+          port: 80
+        websecure:
+          port: 443
+        matrix:
+          port: 8448
+          expose: true
+          exposedPort: 8448
+          protocol: TCP
+      ingressRoute:
+        dashboard:
+          enabled: false
+      securityContext:
+        capabilities:
+          drop: [ALL]
+          add: [NET_BIND_SERVICE]
+        readOnlyRootFilesystem: true
+        runAsGroup: 0
+        runAsNonRoot: false
+        runAsUser: 0
+  # Cert-Manager
+  - name: cert-manager
+    namespace: cert-manager
+    repo_url: https://charts.jetstack.io
+    ref: cert-manager
+    atomic: false
+    force: true
+    version: v1.9.1
+    values:
+      installCRDs: true
+
+
+jpclipffel_k8s_defs_list__late:
+  - name: letsencrypt
+    namespace: cert-manager
+    templates:
+      - ../templates/cert-manager/letsencrypt.clusterissuer.yaml
+    protected: false

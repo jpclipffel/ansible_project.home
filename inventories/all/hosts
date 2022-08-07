@@ -20,7 +20,6 @@ all:
     server.mine42.com:
       ansible_user: ansctl
       ansible_become: true
-      ansible_host: 62.210.38.125
 
     m42nas01:
       ansible_user: admin
@@ -50,10 +49,3 @@ all:
     microk8s:
       hosts:
         server.mine42.com:
-          jpclipffel_k8s_microk8s_dnsnames:
-            - entry: "DNS.6"
-              host: "server.mine42.com"
-          jpclipffel_k8s_microk8s_addons:
-            - "dns"
-            - "storage"
-            - "rbac"

@@ -20,32 +20,52 @@ all:
     server.mine42.com:
       ansible_user: ansctl
       ansible_become: true
+      # ---
+      traefik_cr_sock: "/var/run/docker.sock"
+      traefik_root: "/data1/compose/traefik"
+      traefik_ip: "62.210.38.125"
+      # ---
+      matrix_root: "/data1/compose/matrix"
+      matrix_synapse_server_name: "mine42.com"
 
     m42nas01:
       ansible_user: admin
       ansible_become: false
       ansible_python_interpreter: /share/CACHEDEV1_DATA/.qpkg/QPython3/bin/python3
-      docker_pihole_service_volume: /share/Container/PiHole
-      docker_pihole_service_path: "/share/Container/pihole.docker-compose.yml"
+      # ---
+      pihole_root: /share/Container/PiHole
 
     m42nas02:
       ansible_user: ansctl
       ansible_python_interpreter: /bin/python3.8
-      docker_pihole_service_volume: /volume1/docker/pihole
-      docker_pihole_service_path: /volume1/docker/pihole.docker-compose.yml
+      # ---
+      pihole_root: /volume1/docker/pihole
 
 
   children:
 
+    # All servers
     servers:
       hosts:
         server.mine42.com:
 
+    # All NAS
     nas:
       hosts:
         m42nas01:
         m42nas02:
 
+    # MicroK8s hosts
     microk8s:
       hosts:
         server.mine42.com:
+
+    # Traefik
+    traefik:
+      hosts:
+        server.mine42.com
+
+    # Matrix
+    matrix:
+      hosts:
+        server.mine42.com

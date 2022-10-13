@@ -1,0 +1,45 @@
+# vim: set ft=Ansible ts=2
+
+
+- hosts:
+    - traefik
+  vars:
+    traefik_template: "../templates/traefik/compose.yml"
+  tasks:
+
+    - name: Setup container runtime
+      ansible.builtin.include_role:
+        name: jpclipffel.container.docker
+      tags: [never, setup]
+
+    - name: Setup Compose project directory
+      ansible.builtin.file:
+        path: "{{ traefik_root }}"
+        state: directory
+      tags: [never, setup]
+
+    - name: Template Compose file
+      ansible.builtin.template:
+        src: "{{ traefik_template }}"
+        dest: "{{ traefik_root }}/compose.yml"
+      tags: [never, setup]
+    
+    - name: Start Compose project
+      community.docker.docker_compose:
+        project_name: "traefik"
+        project_src: "{{ traefik_root }}"
+        state: present
+      tags: [never, setup]
+
+    - name: Stop Compose project
+      community.docker.docker_compose:
+        project_name: "traefik"
+        project_src: "{{ traefik_root }}"
+        state: absent
+      tags: [never, teardown, remove]
+
+    - name: Remove Compose data directory
+      ansible.builtin.file:
+        path: "{{ traefik_root }}"
+        state: absent
+      tags: [never, remove]

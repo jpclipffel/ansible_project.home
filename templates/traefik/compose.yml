@@ -1,0 +1,34 @@
+# vim: set ft=jinja-yaml ts=2
+
+version: '3.9'
+services:
+
+  traefik:
+    image: traefik:v2.9
+    command:
+      # General
+      - "--api.insecure=false"
+      # Entry points
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.matrix.address=:8448"
+      # Docker
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      # LetsEncrypt - Test
+      - "--certificatesresolvers.le_test.acme.tlschallenge=true"
+      - "--certificatesresolvers.le_test.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.le_test.acme.email=acme@mine42.com"
+      - "--certificatesresolvers.le_test.acme.storage=/letsencrypt/acme-test.json"
+      # LetsEncrypt - Prod
+      - "--certificatesresolvers.le_prod.acme.tlschallenge=true"
+      - "--certificatesresolvers.le_prod.acme.email=acme@mine42.com"
+      - "--certificatesresolvers.le_prod.acme.storage=/letsencrypt/acme-prod.json"
+    ports:
+      - "{{ traefik_ip }}:80:80"      # HTTP
+      - "{{ traefik_ip }}:443:443"    # HTTPS
+      - "{{ traefik_ip }}:8448:8448"  # Matrix / HTTPS
+    volumes:
+      # Docker
+      - "{{ traefik_cr_sock }}:/var/run/docker.sock:ro"
+      # LetsEncrypt
+      - "{{ traefik_root }}/letsencrypt:/letsencrypt:rw"

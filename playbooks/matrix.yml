@@ -1,0 +1,47 @@
+# vim: set ft=Ansible ts=2
+
+
+- hosts:
+    - matrix
+  vars:
+    matrix_template: "../templates/matrix/compose.yml"
+  tasks:
+
+    - name: Setup Compose project directory
+      ansible.builtin.file:
+        path: "{{ matrix_root }}"
+        state: directory
+      tags: [never, setup]
+
+    - name: Get server status
+      ansible.builtin.stat:
+        path: "{{ matrix_root }}/matrix-data/homeserver.yaml"
+      register: _matrix_config_file
+      tags: [never, setup]
+
+    - name: Template Compose file
+      ansible.builtin.template:
+        src: "{{ matrix_template }}"
+        dest: "{{ matrix_root }}/compose.yml"
+      tags: [never, setup]
+
+    - name: Initialize Synapse
+      ansible.builtin.shell: >
+        docker-compose run
+        --rm
+        -f {{ matrix_root }}/compose.yml
+        -p matrix
+        -e SYNAPSE_SERVER_NAME={{ matrix_synapse_server_name }}
+        -e SYNAPSE_REPORT_STATS=no
+        synapse generate
+      when:
+        - not _matrix_config_file.stat.isreg
+      tags: [never, setup]
+
+    - name: Start Compose project
+      community.docker.docker_compose:
+        project_name: "matrix"
+        project_src: "{{ matrix_root }}"
+        state: present
+      tags: [never, setup]
+

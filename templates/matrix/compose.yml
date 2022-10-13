@@ -1,0 +1,45 @@
+# vim: set ft=jinja-yaml ts=2
+
+version: '3'
+services:
+
+  synapse:
+    image: docker.io/matrixdotorg/synapse:latest
+    restart: unless-stopped
+    environment:
+      - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
+    volumes:
+      - "{{ matrix_root }}/matrix-data:/data"
+    # depends_on:
+    #   - db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.synapse.rule=Host(`mine42.com`)"
+      - "traefik.http.routers.synapse.entrypoints=matrix"
+      - "traefik.http.routers.synapse.tls.certresolver=le_prod"
+    networks:
+      - traefik_default
+
+  # db:
+  #   image: docker.io/postgres:12-alpine
+  #   environment:
+  #     - POSTGRES_USER=synapse
+  #     - POSTGRES_PASSWORD=changeme
+  #     - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+  #   volumes:
+  #     - {{ matrix_root }}/postgres-data:/var/lib/postgresql/data
+
+  synapse-admin:
+    image: awesometechnologies/synapse-admin
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.synapse-admin.rule=Host(`synapse-admin.mine42.com`)"
+      - "traefik.http.routers.synapse-admin.entrypoints=websecure"
+      - "traefik.http.routers.synapse-admin.tls.certresolver=le_prod"
+    networks:
+      - traefik_default
+
+networks:
+  traefik_default:
+    external: true
